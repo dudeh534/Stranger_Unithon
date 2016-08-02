@@ -3,6 +3,7 @@ package com.unithon.cafee;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,7 +44,12 @@ public class NMapActivity extends com.nhn.android.maps.NMapActivity {
         Latitude = DataStorage.getItem_array().get(position).getLatitude();
         Longtitude = DataStorage.getItem_array().get(position).getLongtitude();
         make = (Button) findViewById(R.id.button2);
-        make.onc
+        make.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(NMapActivity.this, "신청되었습니다",Toast.LENGTH_SHORT).show();
+            }
+        });
         title.setText(DataStorage.getItem_array().get(position).getTitle());
         workgroup_type.setText(DataStorage.getItem_array().get(position).getWorkgroup_type());
         text.setText(DataStorage.getItem_array().get(position).getText());

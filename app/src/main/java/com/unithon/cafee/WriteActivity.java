@@ -1,5 +1,6 @@
 package com.unithon.cafee;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -28,11 +29,12 @@ public class WriteActivity extends AppCompatActivity {
     SharedPreferences setting;
     double latitude, longtitude;
     String workname;
+    private ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write);
-        setting = getSharedPreferences("setting",0);
+        setting = getSharedPreferences("setting", 0);
         location = (TextView) findViewById(R.id.location);
         title = (EditText) findViewById(R.id.title);
         max = (EditText) findViewById(R.id.max);
@@ -49,28 +51,35 @@ public class WriteActivity extends AppCompatActivity {
         make.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                params.put("workplace_name",title);
-                params.put("title",title.getText().toString());
-                params.put("text",text.getText().toString());
-                params.put("address",location.toString());
-                params.put("latitude",latitude);
-                params.put("longtitude",longtitude);
-                params.put("workgroup_type",workgroup.getText().toString());
-                params.put("max_limit",Integer.parseInt(max.getText().toString()));
-                params.put("workgroup_manager_id",setting.getString("user_id",""));
-                restClient.post("workgroup", params, new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                        Toast.makeText(WriteActivity.this,"완료",Toast.LENGTH_SHORT).show();
-                        finish();
+                dialog = ProgressDialog.show(WriteActivity.this, "",
+                        "등록 중입니다. 잠시만 기다려 주세요", true);
+                if (!(title.getText().toString().isEmpty() || text.getText().toString().isEmpty() || workgroup.getText().toString().isEmpty() || max.getText().toString().isEmpty())) {
+                    params.put("workplace_name", title);
+                    params.put("title", title.getText().toString());
+                    params.put("text", text.getText().toString());
+                    params.put("address", location.toString());
+                    params.put("latitude", latitude);
+                    params.put("longtitude", longtitude);
+                    params.put("workgroup_type", workgroup.getText().toString());
+                    params.put("max_limit", Integer.parseInt(max.getText().toString()));
+                    params.put("workgroup_manager_id", setting.getString("user_id", ""));
+                    restClient.post("workgroup", params, new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            Toast.makeText(WriteActivity.this, "완료", Toast.LENGTH_SHORT).show();
+                            finish();
 
-                    }
+                        }
 
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                        Log.e("ff","dsafdsf");
-                    }
-                });
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                            Log.e("ff", "dsafdsf");
+                        }
+                    });
+                }else{
+                    Toast.makeText(WriteActivity.this, "정보를 모두 입력해주세요.",Toast.LENGTH_SHORT).show();
+                }
+                dialog.dismiss();
             }
         });
     }
@@ -78,8 +87,8 @@ public class WriteActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==RESULT_OK){
-            if(requestCode==1){
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 1) {
                 location.setText(data.getStringExtra("Location"));
                 latitude = Double.parseDouble(data.getStringExtra("Latitude"));
                 longtitude = Double.parseDouble(data.getStringExtra("Longtitude"));

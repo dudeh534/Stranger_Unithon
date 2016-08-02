@@ -1,5 +1,6 @@
 package com.unithon.cafee;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +36,7 @@ public class NicknameActivity extends AppCompatActivity {
     RestClient restClient;
     RequestParams params;
     String phoneNum;
+    private ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +75,9 @@ public class NicknameActivity extends AppCompatActivity {
                 if (nick.getText().toString().isEmpty()) {
                     Toast.makeText(NicknameActivity.this, "닉네임을 입력해주세요", Toast.LENGTH_SHORT).show();
                 } else {
+                    dialog = ProgressDialog.show(NicknameActivity.this, "",
+                            "로그인 중. 잠시 기다려주세요.", true);
+
                     editor.putString("nick", nick.getText().toString());
 
                     params.put("nickname", nick.getText().toString());
@@ -90,6 +95,7 @@ public class NicknameActivity extends AppCompatActivity {
                                 editor.putString("user_id", response.getString("user_id"));
                                 editor.commit();
                                 Log.e("adsf11111", "Asfssf");
+                                dialog.dismiss();
                                 Intent intent = new Intent(NicknameActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();

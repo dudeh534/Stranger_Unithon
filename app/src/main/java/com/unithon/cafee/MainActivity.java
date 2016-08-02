@@ -1,5 +1,6 @@
 package com.unithon.cafee;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity
     private RestClient restClient = new RestClient(this);
     RecyclerView recyclerView_Main;
     final List<Recycler_item> items = new ArrayList<>();
-
+    private ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +57,8 @@ public class MainActivity extends AppCompatActivity
                 startActivity(Write_Intent);
             }
         });
-
+        dialog = ProgressDialog.show(MainActivity.this, "",
+                "목록을 불러오는 중입니다. 잠시만 기다려주세요", true);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -104,6 +106,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             nickname.setText("못받아와");
         }
+
         recyclerView_Main = (RecyclerView) findViewById(R.id.Recycler_Main);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getApplicationContext());
         recyclerView_Main.setHasFixedSize(true);
@@ -115,6 +118,7 @@ public class MainActivity extends AppCompatActivity
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 super.onSuccess(statusCode, headers, response);
                 try {
+
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject object = response.getJSONObject(i);
                         Recycler_item recycler_item = new Recycler_item(object.getInt("max_user_count"), object.getInt("join_user_count"), object.getString("title"), object.getString("text"),
@@ -129,6 +133,7 @@ public class MainActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
                 recyclerView_Main.setAdapter(new RecyclerAdapter(MainActivity.this, items, R.layout.activity_main));
+                dialog.dismiss();
             }
         });
 
